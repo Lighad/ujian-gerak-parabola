@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ujian Fisika — Gerak Parabola</title>
+<style>
+:root{--bg:#f5f7fb;--card:#fff;--ink:#172033;--muted:#667085;--accent:#2563eb;--accent2:#1d4ed8;--ok:#15803d;--bad:#b91c1c}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{background:linear-gradient(135deg,#1d4ed8,#2563eb 55%,#38bdf8);color:white;padding:32px 20px}
+.wrap{max-width:980px;margin:auto}h1{margin:0 0 8px;font-size:clamp(25px,5vw,40px)}.sub{opacity:.92}
+.info{display:flex;gap:12px;flex-wrap:wrap;margin-top:18px}.badge{background:#ffffff22;border:1px solid #ffffff55;padding:8px 12px;border-radius:999px}
+main{padding:24px 16px 50px}.topbar{display:flex;justify-content:space-between;gap:12px;align-items:center;position:sticky;top:0;z-index:5;background:#ffffffee;backdrop-filter:blur(10px);padding:12px 0}
+.timer{font-weight:800;color:#b91c1c}.progress{height:9px;background:#e5e7eb;border-radius:20px;overflow:hidden;margin:10px 0 22px}.bar{height:100%;background:var(--accent);width:0;transition:.2s}
+.q{background:var(--card);border:1px solid #e6eaf0;border-radius:18px;padding:22px;margin-bottom:18px;box-shadow:0 6px 18px #1018280a}
+.qhead{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:10px}.num{font-weight:800;color:var(--accent)}.type{font-size:12px;padding:5px 9px;border-radius:999px;background:#eff6ff;color:#1d4ed8}
+.question{font-size:17px;line-height:1.55;font-weight:650}.formula{background:#f8fafc;padding:10px 12px;border-radius:10px;margin:10px 0;font-family:ui-monospace,monospace;overflow:auto}
+.options{display:grid;gap:10px;margin-top:15px}.opt{display:flex;gap:10px;align-items:flex-start;border:1px solid #dce2ea;border-radius:12px;padding:12px;cursor:pointer;transition:.15s}.opt:hover{border-color:#93c5fd;background:#f8fbff}.opt input{margin-top:4px;accent-color:var(--accent)}.opt.correct{border-color:#86efac;background:#f0fdf4}.opt.wrong{border-color:#fca5a5;background:#fef2f2}
+.explain{display:none;margin-top:12px;padding:12px;border-radius:10px;background:#f8fafc;color:#475467;line-height:1.5}.checked .explain{display:block}
+button{border:0;border-radius:12px;padding:12px 18px;font-weight:750;cursor:pointer;background:var(--accent);color:white}button:hover{background:var(--accent2)}button.secondary{background:#e5e7eb;color:#111827}
+.actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}.result{display:none;background:white;border-radius:18px;padding:24px;margin-bottom:20px;border:1px solid #dbeafe}.score{font-size:38px;font-weight:900;color:var(--accent)}.note{color:var(--muted);line-height:1.5}
+footer{text-align:center;color:var(--muted);padding:25px}
+@media(max-width:600px){.q{padding:17px}.question{font-size:16px}.topbar{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<h1>Ujian Fisika: Gerak Parabola</h1>
+<div class="sub">Latihan konsep, perhitungan, kasus, cerita, dan pilihan ganda kompleks.</div>
+<div class="info"><span class="badge">20 soal</span><span class="badge">A–E</span><span class="badge">PG biasa + kompleks</span><span class="badge">Timer 30 menit</span></div>
+</div></header>
+
+<main class="wrap">
+<div class="topbar"><div><b>Progress</b> — <span id="answered">0</span>/20 terjawab</div><div class="timer">⏱ <span id="time">30:00</span></div></div>
+<div class="progress"><div class="bar" id="bar"></div></div>
+<div id="result" class="result"></div>
+<form id="quiz"></form>
+<div class="actions"><button type="button" class="secondary" onclick="resetQuiz()">Ulangi</button><button type="button" onclick="submitQuiz()">Kumpulkan & Lihat Nilai</button></div>
+</main>
+<footer>Gerak parabola ideal: hambatan udara diabaikan dan g = 10 m/s², kecuali dinyatakan lain.</footer>
+
+<script>
+const questions = [
+{type:"PG Biasa",q:"Sebuah bola ditendang dengan kecepatan awal 20 m/s pada sudut 30° terhadap horizontal. Komponen kecepatan awal pada arah horizontal adalah …",o:["10 m/s","10√3 m/s","20√3 m/s","5√3 m/s","5 m/s"],a:[1],e:"vx = v0 cos 30° = 20(√3/2) = 10√3 m/s."},
+{type:"PG Biasa",q:"Pada gerak parabola ideal, percepatan benda selama berada di udara adalah …",o:["0","10 m/s² ke atas","10 m/s² ke bawah","berubah-ubah mengikuti lintasan","maksimum di titik tertinggi"],a:[2],e:"Percepatan selalu g ke bawah; secara umum ax = 0 dan ay = −g."},
+{type:"PG Biasa",q:"Sebuah benda ditembakkan dari tanah dengan v0 = 20 m/s dan sudut 45°. Jika g = 10 m/s², waktu total benda di udara adalah …",o:["1 s","2 s","2√2 s","4 s","√2 s"],a:[1],e:"T = 2v0 sinθ/g = 2(20)(√2/2)/10 = 2√2 s."},
+{type:"Kasus",q:"Rani melempar bola dari tepi lapangan dengan kecepatan awal 25 m/s pada sudut 53°. Gunakan sin 53° = 0,8 dan cos 53° = 0,6. Komponen kecepatan awal bola adalah …",o:["vx = 20 m/s, vy = 15 m/s","vx = 15 m/s, vy = 20 m/s","vx = 25 m/s, vy = 8 m/s","vx = 20 m/s, vy = 8 m/s","vx = 15 m/s, vy = 10 m/s"],a:[1],e:"vx = 25(0,6)=15 m/s dan vy = 25(0,8)=20 m/s."},
+{type:"Cerita",q:"Seorang pemain basket melempar bola ke arah ring. Ketika bola mencapai titik tertinggi lintasannya, pernyataan yang benar adalah …",o:["Kecepatan vertikal nol, tetapi kecepatan horizontal tetap ada","Kecepatan horizontal nol dan vertikal maksimum","Percepatan menjadi nol","Bola berhenti sesaat","Gaya gravitasi menjadi nol"],a:[0],e:"Di puncak, vy = 0. Namun vx tetap konstan jika hambatan udara diabaikan."},
+{type:"PG Biasa",q:"Dua benda ditembakkan dari titik yang sama dengan kelajuan awal sama, masing-masing pada sudut 30° dan 60°. Jika keduanya mendarat pada ketinggian yang sama dengan titik peluncuran, maka …",o:["Jangkauan sudut 30° lebih besar","Jangkauan sudut 60° lebih besar","keduanya memiliki jangkauan yang sama","waktu terbang keduanya sama","tinggi maksimum keduanya sama"],a:[2],e:"Sudut θ dan (90°−θ) menghasilkan jangkauan yang sama karena R = v0² sin 2θ/g."},
+{type:"Kompleks",q:"Pilih SEMUA pernyataan yang benar tentang gerak parabola ideal.",o:["Komponen kecepatan horizontal konstan","Komponen kecepatan vertikal berubah karena gravitasi","Lintasan benda berbentuk parabola","Percepatan horizontal selalu sebesar g","Di titik tertinggi, percepatan benda nol"],a:[0,1,2],e:"Yang benar: vx konstan, vy berubah karena gravitasi, dan lintasan parabola. Percepatan horizontal nol dan gravitasi tetap bekerja di puncak."},
+{type:"Kasus",q:"Sebuah batu dilempar mendatar dari tebing setinggi 45 m dengan kecepatan horizontal 10 m/s. Ambil g = 10 m/s². Waktu yang diperlukan batu untuk mencapai tanah adalah …",o:["2 s","3 s","4 s","4,5 s","9 s"],a:[1],e:"Gerak vertikal: h = ½gt² → 45 = 5t² → t = 3 s."},
+{type:"Cerita",q:"Sebuah bola sepak ditendang dan kembali ke tanah pada ketinggian semula. Jika sudut elevasi dipertahankan tetapi kecepatan awal dibuat 2 kali lipat, maka jangkauan horizontal menjadi …",o:["tetap","2 kali lipat","3 kali lipat","4 kali lipat","√2 kali lipat"],a:[3],e:"R = v0² sin 2θ/g, sehingga jika v0 menjadi 2v0, R menjadi 4R."},
+{type:"PG Biasa",q:"Persamaan posisi vertikal gerak parabola yang diluncurkan dari y0 = 0 adalah …",o:["y = v0 cosθ · t","y = v0 sinθ · t − ½gt²","y = v0t + gt²","y = ½gt²","y = v0² sinθ"],a:[1],e:"Komponen awal vertikal adalah v0 sinθ, lalu dipengaruhi −½gt²."},
+{type:"Kompleks",q:"Sebuah proyektil diluncurkan dan mendarat pada ketinggian yang sama. Pilih SEMUA pernyataan yang benar.",o:["Waktu naik sama dengan waktu turun","Kelajuan awal sama dengan kelajuan saat kembali ke ketinggian awal","Kecepatan horizontal di titik mana pun tetap","Kecepatan vertikal di puncak sama dengan nol","Percepatan di titik tertinggi sama dengan nol"],a:[0,1,2,3],e:"Empat pernyataan pertama benar. Percepatan tetap g ke bawah, termasuk di titik tertinggi."},
+{type:"PG Biasa",q:"Sebuah benda diluncurkan dengan v0 = 10 m/s pada sudut 90° terhadap horizontal. Dalam model gerak parabola, jangkauan horizontalnya adalah …",o:["10 m","5 m","100 m","0 m","20 m"],a:[3],e:"cos 90° = 0, sehingga vx = 0 dan tidak ada perpindahan horizontal."},
+{type:"Kasus",q:"Sebuah bola dilempar dari tanah dengan v0 = 20 m/s dan sudut 30°. Berapa tinggi maksimum yang dicapai? Gunakan g = 10 m/s².",o:["2,5 m","5 m","10 m","15 m","20 m"],a:[1],e:"Hmaks = v0² sin²θ/(2g) = 400(0,25)/20 = 5 m."},
+{type:"Cerita",q:"Dalam pertandingan, seorang atlet ingin melempar benda sejauh mungkin pada bidang datar dengan kecepatan awal tetap. Tanpa hambatan udara, sudut elevasi yang menghasilkan jangkauan maksimum adalah …",o:["15°","30°","45°","60°","90°"],a:[2],e:"Jangkauan maksimum terjadi saat sin 2θ maksimum, yaitu 1 → 2θ=90° → θ=45°."},
+{type:"Kompleks",q:"Sebuah benda bergerak parabola. Pilih SEMUA besaran yang dapat bernilai nol tepat di titik tertinggi.",o:["Kecepatan vertikal","Kecepatan horizontal","Komponen percepatan horizontal","Percepatan gravitasi","Kelajuan benda"],a:[0,2],e:"vy = 0 dan ax = 0. Namun vx biasanya tidak nol, gravitasi tetap ada, dan kelajuan masih sebesar |vx|."},
+{type:"Kasus",q:"Sebuah paket dijatuhkan dari drone yang bergerak horizontal dengan kecepatan konstan. Abaikan hambatan udara. Dari sudut pandang pengamat di tanah, lintasan paket setelah dilepas adalah …",o:["garis vertikal","garis horizontal","parabola","lingkaran","garis lurus miring"],a:[2],e:"Paket memiliki vx awal dari drone dan mengalami percepatan vertikal karena gravitasi, sehingga lintasannya parabola."},
+{type:"PG Biasa",q:"Hubungan yang tepat antara jangkauan horizontal R dan tinggi maksimum H untuk proyektil yang kembali ke ketinggian awal adalah …",o:["R = 2H","R selalu sama dengan H","Tidak ada satu hubungan umum R = kH tanpa mengetahui sudut peluncuran","R = H/2","R = 4H"],a:[2],e:"R dan H bergantung pada sudut peluncuran; tanpa θ, tidak ada rasio tunggal yang berlaku untuk semua kasus."},
+{type:"Cerita",q:"Andi melempar bola dari tanah. Setelah 1 s, bola berada pada ketinggian 15 m dan komponen kecepatan vertikal awalnya 20 m/s. Dengan g = 10 m/s², pernyataan yang sesuai adalah …",o:["Data tidak mungkin karena y = 10 m","Data sesuai karena y = 15 m","Data sesuai karena y = 20 m","Data tidak mungkin karena percepatan nol","Data sesuai hanya jika vx = 0"],a:[1],e:"y = vy0 t − ½gt² = 20(1) − 5 = 15 m."},
+{type:"Kompleks",q:"Dua proyektil A dan B diluncurkan dari tanah dengan kelajuan awal yang sama dan mendarat pada ketinggian semula. Sudut A = 20° dan sudut B = 70°. Pilih SEMUA pernyataan yang benar.",o:["Jangkauan A dan B sama","Waktu terbang B lebih lama","Tinggi maksimum B lebih besar","Komponen kecepatan horizontal A lebih besar","Komponen kecepatan vertikal B lebih besar"],a:[0,1,2,3,4],e:"Karena 70° = 90°−20°, jangkauan sama. B memiliki sin lebih besar → waktu dan tinggi maksimum lebih besar. A memiliki cos lebih besar → vx lebih besar. Vy awal B juga lebih besar."},
+{type:"PG Biasa",q:"Jika pada suatu saat kecepatan horizontal proyektil 12 m/s dan kecepatan vertikalnya 5 m/s ke atas, besar kelajuannya adalah …",o:["7 m/s","13 m/s","17 m/s","60 m/s","√17 m/s"],a:[1],e:"v = √(vx²+vy²) = √(144+25) = √169 = 13 m/s."}
+];
+
+let state={answers:Array(questions.length).fill(null),submitted:false,time:1800};
+
+function shuffle(arr){
+  for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}
+  return arr;
+}
+function render(){
+  const quiz=document.getElementById('quiz'); quiz.innerHTML='';
+  questions.forEach((x,i)=>{
+    const isMulti=x.type==="Kompleks";
+    const choices=x.o.map((text,idx)=>({text,idx}));
+    shuffle(choices);
+    const div=document.createElement('section'); div.className='q'; div.dataset.q=i;
+    div.innerHTML=`<div class="qhead"><span class="num">Soal ${i+1}</span><span class="type">${x.type}${isMulti?' — pilih semua yang benar':''}</span></div>
+    <div class="question">${x.q}</div>
+    <div class="options">${choices.map(c=>`<label class="opt"><input type="${isMulti?'checkbox':'radio'}" name="q${i}" value="${c.idx}"><span><b>${String.fromCharCode(65+choices.indexOf(c))}.</b> ${c.text}</span></label>`).join('')}</div>
+    <div class="explain"><b>Pembahasan:</b> ${x.e}</div>`;
+    quiz.appendChild(div);
+  });
+  quiz.addEventListener('change',updateProgress,{once:false});
+}
+function selected(i){
+  return [...document.querySelectorAll(`input[name="q${i}"]:checked`)].map(x=>+x.value).sort((a,b)=>a-b);
+}
+function updateProgress(){
+  let n=0; for(let i=0;i<questions.length;i++) if(selected(i).length)n++;
+  document.getElementById('answered').textContent=n;
+  document.getElementById('bar').style.width=(n/questions.length*100)+'%';
+}
+function submitQuiz(){
+  if(state.submitted)return;
+  state.submitted=true; clearInterval(window.timer);
+  let score=0;
+  questions.forEach((x,i)=>{
+    const got=selected(i), correct=[...x.a].sort((a,b)=>a-b);
+    const ok=got.length===correct.length&&got.every((v,j)=>v===correct[j]);
+    if(ok)score++;
+    const sec=document.querySelector(`.q[data-q="${i}"]`); sec.classList.add('checked');
+    sec.querySelectorAll('.opt').forEach(label=>{
+      const input=label.querySelector('input'), v=+input.value;
+      if(x.a.includes(v)) label.classList.add('correct');
+      else if(input.checked) label.classList.add('wrong');
+      input.disabled=true;
+    });
+  });
+  const pct=Math.round(score/questions.length*100);
+  const result=document.getElementById('result');
+  result.style.display='block';
+  result.innerHTML=`<div>Hasil ujian</div><div class="score">${score}/${questions.length} — ${pct}</div><div class="note">${pct>=80?'Pemahaman konsep dan perhitunganmu sudah cukup kuat.':pct>=60?'Masih ada beberapa konsep yang perlu ditinjau kembali.':'Sebaiknya ulangi materi komponen kecepatan, waktu terbang, tinggi maksimum, dan jangkauan.'}<br>Jawaban benar diberi tanda hijau; jawaban yang dipilih tetapi salah diberi tanda merah.</div>`;
+  result.scrollIntoView({behavior:'smooth'});
+}
+function resetQuiz(){location.reload()}
+function startTimer(){
+  window.timer=setInterval(()=>{
+    if(state.submitted)return;
+    state.time--; if(state.time<0){submitQuiz();return}
+    const m=String(Math.floor(state.time/60)).padStart(2,'0'),s=String(state.time%60).padStart(2,'0');
+    document.getElementById('time').textContent=`${m}:${s}`;
+  },1000)
+}
+render(); startTimer();
+</script>
+</body>
+</html>
